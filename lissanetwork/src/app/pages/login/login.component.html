@@ -1,0 +1,54 @@
+<div class="login-container">
+
+  <!-- LADO IZQUIERDO -->
+  <div class="left-panel">
+    <div class="logo-area">
+      <h1>Sistema de Inventario</h1>
+      <div class="logo-box">
+        <img src="assets/logos.jpeg" alt="Lissa Network Logo">
+      </div>
+    </div>
+  </div>
+
+  <!-- LADO DERECHO -->
+  <div class="right-panel">
+    <div class="login-box">
+      <h2>Bienvenido</h2>
+      <p>Ingrese su usuario y contraseña para continuar</p>
+
+      <form (ngSubmit)="login()">
+
+        <!-- USUARIO -->
+        <div class="input-group">
+          <span class="icon">👤</span>
+          <input type="text"
+                 placeholder="Usuario"
+                 [(ngModel)]="usuario"
+                 name="usuario"
+                 required>
+        </div>
+
+        <!-- CONTRASEÑA CON OJO -->
+        <div class="input-group password-group">
+          <span class="icon">🔒</span>
+
+          <input
+            [type]="mostrarPassword ? 'text' : 'password'"
+            placeholder="Contraseña"
+            [(ngModel)]="password"
+            name="password"
+            required
+          >
+
+          <span class="eye" (click)="togglePassword()">
+            {{ mostrarPassword ? '🙈' : '👁' }}
+          </span>
+        </div>
+
+        <button type="submit">LOGIN</button>
+
+      </form>
+    </div>
+  </div>
+
+</div>

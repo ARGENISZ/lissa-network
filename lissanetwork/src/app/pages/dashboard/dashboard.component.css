@@ -1,0 +1,139 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6f9;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #1c2730, #182229);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 0;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  position: fixed;       /* 🔥 sidebar fijo */
+  height: 100vh;
+  left: 0;
+  top: 0;
+}
+
+/* LOGO */
+.logo {
+  text-align: center;
+  margin-bottom: 35px;
+  padding: 0 20px;
+}
+
+.logo h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.logo span {
+  font-size: 12px;
+  color: #9aa7af;
+  letter-spacing: 0.5px;
+}
+
+/* MENU */
+.menu {
+  list-style: none;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ITEM */
+.menu li {
+  padding: 14px 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.25s ease;
+  font-size: 14px;
+  color: #d1d9de;
+  border-left: 4px solid transparent;
+}
+
+.menu li span {
+  margin-right: 12px;
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+}
+
+/* HOVER */
+.menu li:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #00b894;
+  padding-left: 30px;
+  color: white;
+}
+
+/* ACTIVO */
+.menu li.active {
+  background: rgba(0, 184, 148, 0.15);
+  border-left: 4px solid #00b894;
+  color: white;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #7e8a92;
+  padding: 15px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= MAIN AREA ================= */
+.main {
+  margin-left: 260px; /* 🔥 espacio para sidebar fijo */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 60px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.page-title {
+  font-weight: 600;
+  color: #333;
+}
+
+.user-info {
+  font-size: 14px;
+  color: #555;
+}
+
+.logout {
+  color: #d63031;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.logout:hover {
+  text-decoration: underline;
+}
+
+/* ================= CONTENIDO ================= */
+.content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}

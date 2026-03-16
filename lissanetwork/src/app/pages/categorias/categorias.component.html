@@ -1,0 +1,59 @@
+<div class="categorias-wrapper">
+
+  <!-- LISTADO -->
+  <div *ngIf="!mostrarFormulario">
+
+    <div class="header">
+      <h2>Categorías</h2>
+      <button class="btn-add" (click)="abrirFormulario()">
+        + Nueva Categoría
+      </button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Categoría</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let cat of categorias; let i = index">
+          <td>{{ cat.categoria }}</td>
+          <td class="acciones">
+            <button class="btn-icon edit" (click)="editarCategoria(i)">✏️</button>
+            <button class="btn-icon delete" (click)="eliminarCategoria(i)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- FORMULARIO -->
+  <div *ngIf="mostrarFormulario" class="form-card">
+
+    <div class="form-header">
+      <h2>{{ modoEdicion ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
+
+      <button class="btn-back" (click)="cancelar()">
+        ← Volver
+      </button>
+    </div>
+
+    <div class="form-grid single">
+      <input type="text"
+             placeholder="Nombre de la Categoría"
+             [(ngModel)]="categoriaActual.categoria">
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-save" (click)="guardarCategoria()">
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,70 @@
+<div class="proveedores-wrapper">
+
+  <!-- LISTADO -->
+  <div *ngIf="!mostrarFormulario">
+
+    <div class="header">
+      <h2>Proveedores</h2>
+      <button class="btn-add" (click)="abrirFormulario()">
+        + Nuevo Proveedor
+      </button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Domicilio</th>
+          <th>Teléfono</th>
+          <th>Correo</th>
+          <th>RFC</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let proveedor of proveedores; let i = index">
+          <td>{{ proveedor.nombre }}</td>
+          <td>{{ proveedor.domicilio }}</td>
+          <td>{{ proveedor.telefono }}</td>
+          <td>{{ proveedor.correo }}</td>
+          <td>{{ proveedor.rfc }}</td>
+
+          <td class="acciones">
+            <button class="btn-icon edit" (click)="editarProveedor(i)">✏️</button>
+            <button class="btn-icon delete" (click)="eliminarProveedor(i)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- FORMULARIO LIMPIO -->
+  <div *ngIf="mostrarFormulario" class="form-card">
+
+    <div class="form-header">
+      <h2>{{ modoEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h2>
+
+      <button class="btn-back" (click)="cancelar()">
+        ← Volver
+      </button>
+    </div>
+
+    <div class="form-grid">
+      <input type="text" placeholder="Nombre" [(ngModel)]="proveedorActual.nombre">
+      <input type="text" placeholder="Domicilio" [(ngModel)]="proveedorActual.domicilio">
+      <input type="text" placeholder="Teléfono" [(ngModel)]="proveedorActual.telefono">
+      <input type="email" placeholder="Correo" [(ngModel)]="proveedorActual.correo">
+      <input type="text" placeholder="RFC" [(ngModel)]="proveedorActual.rfc">
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-save" (click)="guardarProveedor()">
+        {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>

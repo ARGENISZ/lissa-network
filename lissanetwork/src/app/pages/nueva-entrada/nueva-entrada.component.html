@@ -1,0 +1,133 @@
+<div class="entrada-wrapper">
+
+  <div class="entrada-card">
+
+    <h2>
+  {{ pestanaActiva === 'nuevo' 
+      ? 'Registro de Nueva Entrada' 
+      : 'Registrar Producto Existente' }}
+</h2>
+
+    <!-- TABS INTERNAS -->
+    <div class="tabs">
+
+      <button 
+        [class.active]="pestanaActiva === 'nuevo'"
+        (click)="cambiarPestana('nuevo')">
+        Producto Nuevo
+      </button>
+
+      <button 
+        [class.active]="pestanaActiva === 'existente'"
+        (click)="cambiarPestana('existente')">
+        Producto Existente
+      </button>
+
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="form-content">
+
+      <!-- DATOS PRODUCTO -->
+      <div class="section">
+        <h3>Datos del Producto</h3>
+
+        <div class="grid-2">
+
+          <div class="form-group">
+            <label>Nombre del Producto</label>
+            <input type="text" [(ngModel)]="producto.nombre">
+          </div>
+
+          <div class="form-group">
+            <label>Categoría</label>
+            <input type="text" [(ngModel)]="producto.categoria">
+          </div>
+
+          <div class="form-group">
+            <label>Código</label>
+            <input type="text" [(ngModel)]="producto.codigo">
+          </div>
+
+          <div class="form-group">
+            <label>Proveedor</label>
+            <input type="text" [(ngModel)]="producto.proveedor">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DETALLE COMPRA -->
+      <div class="section">
+        <h3>Detalle de la Compra</h3>
+
+        <div class="grid-3">
+
+          <div class="form-group">
+            <label>Costo</label>
+            <input type="number" [(ngModel)]="producto.costo">
+          </div>
+
+          <div class="form-group">
+            <label>Unidades</label>
+            <input type="number" [(ngModel)]="producto.unidades">
+          </div>
+
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" [(ngModel)]="producto.fecha">
+          </div>
+
+          <div class="form-group">
+            <label>Precio de Venta</label>
+            <input type="number" [(ngModel)]="producto.precioVenta">
+          </div>
+
+          <div class="form-group">
+            <label>Utilidad</label>
+            <input type="number" [(ngModel)]="producto.utilidad">
+          </div>
+
+          <div class="form-group">
+            <label>No. Factura</label>
+            <input type="text" [(ngModel)]="producto.factura">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- INFORMACIÓN ADICIONAL -->
+      <div class="section">
+        <h3>Información Adicional</h3>
+
+        <div class="grid-3">
+
+          <div class="form-group">
+            <label>Almacén</label>
+            <input type="text" [(ngModel)]="producto.almacen">
+          </div>
+
+          <div class="form-group">
+            <label>Número de Lote</label>
+            <input type="text" [(ngModel)]="producto.lote">
+          </div>
+
+          <div class="form-group">
+            <label>Fecha de Caducidad</label>
+            <input type="date" [(ngModel)]="producto.caducidad">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn-primary" (click)="registrarEntrada()">
+          Registrar Entrada
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

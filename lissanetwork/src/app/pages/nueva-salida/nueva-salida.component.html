@@ -1,0 +1,123 @@
+<div class="salida-wrapper">
+
+  <div class="salida-card">
+
+    <h2>
+      {{ pestanaActiva === 'producto'
+        ? 'Registro de Nueva Salida'
+        : 'Registro de Colección' }}
+    </h2>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button 
+        [class.active]="pestanaActiva === 'producto'"
+        (click)="cambiarPestana('producto')">
+        Producto Único
+      </button>
+
+      <button 
+        [class.active]="pestanaActiva === 'coleccion'"
+        (click)="cambiarPestana('coleccion')">
+        Colección
+      </button>
+    </div>
+
+    <!-- INFORMACIÓN SUPERIOR -->
+    <div class="top-grid">
+
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" [(ngModel)]="salida.fecha">
+      </div>
+
+      <div class="form-group">
+        <label>Folio Salida</label>
+        <input type="text" [(ngModel)]="salida.folio">
+      </div>
+
+      <div class="form-group">
+        <label>Cliente</label>
+        <input type="text" [(ngModel)]="salida.cliente">
+      </div>
+
+      <div class="form-group">
+        <label>Factura</label>
+        <input type="text" [(ngModel)]="salida.factura">
+      </div>
+
+    </div>
+
+    <!-- PRODUCTO -->
+    <div class="section">
+
+      <h3>Selecciona un producto del inventario</h3>
+
+      <div class="grid-2">
+
+        <div class="form-group">
+          <label>Escanear código</label>
+          <input type="text" [(ngModel)]="salida.codigo">
+        </div>
+
+        <div class="form-group">
+          <label>Nombre del Producto</label>
+          <input type="text" [(ngModel)]="salida.nombre">
+        </div>
+
+        <div class="form-group">
+          <label>Categoría</label>
+          <input type="text" [(ngModel)]="salida.categoria">
+        </div>
+
+        <div class="form-group">
+          <label>Proveedor</label>
+          <input type="text" [(ngModel)]="salida.proveedor">
+        </div>
+
+      </div>
+
+      <div class="disponibles">
+        Disponibles: 
+        <span>{{ salida.disponibles }}</span>
+      </div>
+
+    </div>
+
+    <!-- DETALLE SALIDA -->
+    <div class="section">
+
+      <h3>Detalle de la Salida</h3>
+
+      <div class="grid-3">
+
+        <div class="form-group">
+          <label>Precio de Venta</label>
+          <input type="number" [(ngModel)]="salida.precioVenta">
+        </div>
+
+        <div class="form-group">
+          <label>Número de Unidades</label>
+          <input type="number" [(ngModel)]="salida.unidades">
+        </div>
+
+        <div class="form-group total-box">
+          <label>Total de Venta</label>
+          <div class="total">
+            {{ totalVenta | currency:'USD' }}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" (click)="registrarSalida()">
+        Registrar Salida
+      </button>
+    </div>
+
+  </div>
+
+</div>

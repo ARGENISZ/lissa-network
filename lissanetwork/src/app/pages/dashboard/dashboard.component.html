@@ -1,0 +1,77 @@
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="logo">
+      <h2>LISSA NETWORK</h2>
+      <span>Sistema de Inventario</span>
+    </div>
+
+    <ul class="menu">
+
+      <li routerLink="nueva-entrada" routerLinkActive="active">
+        <span>➕</span> Nueva Entrada
+      </li>
+
+      <li routerLink="nueva-salida" routerLinkActive="active">
+        <span>➖</span> Nueva Salida
+      </li>
+
+      <li routerLink="historial-entradas" routerLinkActive="active">
+        <span>📊</span> Historial de Entradas
+      </li>
+
+      <li routerLink="historial-ventas" routerLinkActive="active">
+        <span>💰</span> Historial de Ventas y Salidas
+      </li>
+
+      <li routerLink="inventario" routerLinkActive="active">
+        <span>📦</span> Inventario
+      </li>
+
+      <li routerLink="punto-venta" routerLinkActive="active">
+        <span>🛒</span> Punto de Venta
+      </li>
+
+      <li routerLink="colecciones" routerLinkActive="active">
+        <span>📁</span> Colecciones
+      </li>
+
+      <li routerLink="proveedores" routerLinkActive="active">
+        <span>🚚</span> Proveedores
+      </li>
+
+      <li routerLink="categorias" routerLinkActive="active">
+        <span>🗂</span> Categorías
+      </li>
+
+      <li routerLink="usuarios" routerLinkActive="active">
+        <span>👥</span> Usuarios
+      </li>
+
+    </ul>
+
+    <div class="footer">
+      © 2025 LissaNetwork
+    </div>
+
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="main">
+
+    <div class="topbar">
+      <div class="page-title">Panel de Control</div>
+      <div class="user-info">
+        👤 Admin | <span class="logout">Cerrar sesión</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+
+</div>
