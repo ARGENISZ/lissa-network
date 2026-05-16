@@ -3,21 +3,23 @@
   <div class="entrada-card">
 
     <h2>
-  {{ pestanaActiva === 'nuevo' 
-      ? 'Registro de Nueva Entrada' 
-      : 'Registrar Producto Existente' }}
-</h2>
+      {{ pestanaActiva === 'nuevo' 
+          ? 'Registro de Nueva Entrada' 
+          : 'Registrar Producto Existente' }}
+    </h2>
 
     <!-- TABS INTERNAS -->
     <div class="tabs">
 
       <button 
+        type="button"
         [class.active]="pestanaActiva === 'nuevo'"
         (click)="cambiarPestana('nuevo')">
         Producto Nuevo
       </button>
 
       <button 
+        type="button"
         [class.active]="pestanaActiva === 'existente'"
         (click)="cambiarPestana('existente')">
         Producto Existente
@@ -32,26 +34,104 @@
       <div class="section">
         <h3>Datos del Producto</h3>
 
-        <div class="grid-2">
+        <div class="datos-producto-con-imagen">
 
-          <div class="form-group">
-            <label>Nombre del Producto</label>
-            <input type="text" [(ngModel)]="producto.nombre">
+          <!-- CAMPOS DEL PRODUCTO -->
+          <div class="grid-2">
+
+            <div class="form-group">
+              <label>Nombre del Producto</label>
+              <input 
+                type="text" 
+                [(ngModel)]="producto.nombre"
+                [readonly]="pestanaActiva === 'existente'"
+                placeholder="Nombre del producto">
+            </div>
+
+            <div class="form-group">
+              <label>Categoría</label>
+              <input 
+                type="text" 
+                [(ngModel)]="producto.categoria"
+                [readonly]="pestanaActiva === 'existente'"
+                placeholder="Categoría">
+            </div>
+
+            <div class="form-group">
+              <label>
+                Código
+                <small *ngIf="pestanaActiva === 'existente'">
+                  Escanee o escriba el código
+                </small>
+              </label>
+
+              <input 
+                type="text" 
+                [(ngModel)]="producto.codigo"
+                placeholder="Escanee o ingrese el código"
+                autocomplete="off"
+                autofocus
+                (input)="detectarCodigoScanner()"
+                (keyup.enter)="buscarProductoPorCodigo()">
+            </div>
+
+            <div class="form-group">
+              <label>Proveedor</label>
+              <input 
+                type="text" 
+                [(ngModel)]="producto.proveedor"
+                [readonly]="pestanaActiva === 'existente'"
+                placeholder="Proveedor">
+            </div>
+
           </div>
 
-          <div class="form-group">
-            <label>Categoría</label>
-            <input type="text" [(ngModel)]="producto.categoria">
-          </div>
+          <!-- SUBIR / VER IMAGEN -->
+          <div class="imagen-producto-card">
 
-          <div class="form-group">
-            <label>Código</label>
-            <input type="text" [(ngModel)]="producto.codigo">
-          </div>
+            <label class="titulo-imagen">Imagen del Producto</label>
 
-          <div class="form-group">
-            <label>Proveedor</label>
-            <input type="text" [(ngModel)]="producto.proveedor">
+            <div class="imagen-preview">
+
+              <img 
+                *ngIf="imagenPreview" 
+                [src]="imagenPreview" 
+                alt="Imagen del producto">
+
+              <div *ngIf="!imagenPreview" class="imagen-placeholder">
+                <div class="icono-imagen">📦</div>
+                <p>No hay imagen seleccionada</p>
+              </div>
+
+            </div>
+
+            <!-- Solo permite subir imagen cuando es producto nuevo -->
+            <input
+              *ngIf="pestanaActiva === 'nuevo'"
+              type="file"
+              class="input-imagen"
+              accept="image/jpeg, image/png, image/webp"
+              (change)="seleccionarImagen($event)">
+
+            <p *ngIf="nombreImagen" class="nombre-imagen">
+              Imagen seleccionada: {{ nombreImagen }}
+            </p>
+
+            <button
+              *ngIf="imagenPreview && pestanaActiva === 'nuevo'"
+              type="button"
+              class="btn-quitar-imagen"
+              (click)="quitarImagen()">
+              Quitar Imagen
+            </button>
+
+            <small *ngIf="pestanaActiva === 'nuevo'">Formatos permitidos: JPG, PNG, WEBP</small>
+            <small *ngIf="pestanaActiva === 'nuevo'">Tamaño máximo: 2MB</small>
+
+            <small *ngIf="pestanaActiva === 'existente'">
+              En producto existente la imagen se carga automáticamente si el producto ya tiene una.
+            </small>
+
           </div>
 
         </div>
@@ -65,32 +145,51 @@
 
           <div class="form-group">
             <label>Costo</label>
-            <input type="number" [(ngModel)]="producto.costo">
+            <input 
+              type="number" 
+              [(ngModel)]="producto.costo"
+              (input)="calcularUtilidad()"
+              placeholder="Ingrese el costo">
           </div>
 
           <div class="form-group">
             <label>Unidades</label>
-            <input type="number" [(ngModel)]="producto.unidades">
+            <input 
+              type="number" 
+              [(ngModel)]="producto.unidades"
+              placeholder="Ingrese las unidades">
           </div>
 
           <div class="form-group">
             <label>Fecha</label>
-            <input type="date" [(ngModel)]="producto.fecha">
+            <input 
+              type="date" 
+              [(ngModel)]="producto.fecha">
           </div>
 
           <div class="form-group">
             <label>Precio de Venta</label>
-            <input type="number" [(ngModel)]="producto.precioVenta">
+            <input 
+              type="number" 
+              [(ngModel)]="producto.precioVenta"
+              (input)="calcularUtilidad()"
+              placeholder="Ingrese el precio de venta">
           </div>
 
           <div class="form-group">
             <label>Utilidad</label>
-            <input type="number" [(ngModel)]="producto.utilidad">
+            <input 
+              type="number" 
+              [(ngModel)]="producto.utilidad"
+              placeholder="Utilidad">
           </div>
 
           <div class="form-group">
             <label>No. Factura</label>
-            <input type="text" [(ngModel)]="producto.factura">
+            <input 
+              type="text" 
+              [(ngModel)]="producto.factura"
+              placeholder="Número de factura">
           </div>
 
         </div>
@@ -104,24 +203,35 @@
 
           <div class="form-group">
             <label>Almacén</label>
-            <input type="text" [(ngModel)]="producto.almacen">
+            <input 
+              type="text" 
+              [(ngModel)]="producto.almacen"
+              placeholder="Almacén">
           </div>
 
           <div class="form-group">
             <label>Número de Lote</label>
-            <input type="text" [(ngModel)]="producto.lote">
+            <input 
+              type="text" 
+              [(ngModel)]="producto.lote"
+              placeholder="Número de lote">
           </div>
 
           <div class="form-group">
             <label>Fecha de Caducidad</label>
-            <input type="date" [(ngModel)]="producto.caducidad">
+            <input 
+              type="date" 
+              [(ngModel)]="producto.caducidad">
           </div>
 
         </div>
       </div>
 
       <div class="actions">
-        <button class="btn-primary" (click)="registrarEntrada()">
+        <button 
+          type="button"
+          class="btn-primary" 
+          (click)="registrarEntrada()">
           Registrar Entrada
         </button>
       </div>

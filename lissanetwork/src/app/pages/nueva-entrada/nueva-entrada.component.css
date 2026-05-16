@@ -1,5 +1,7 @@
 .entrada-wrapper {
   padding: 20px;
+  background: #f4f6f9;
+  min-height: 100vh;
 }
 
 .entrada-card {
@@ -12,6 +14,7 @@
 h2 {
   margin-bottom: 20px;
   font-weight: 600;
+  color: #2d3436;
 }
 
 /* TABS */
@@ -40,6 +43,16 @@ h2 {
   background: #dfe6e9;
 }
 
+.tabs button.active:hover {
+  background: #00b894;
+  color: white;
+}
+
+/* FORMULARIO */
+.form-content {
+  width: 100%;
+}
+
 /* SECTIONS */
 .section {
   margin-bottom: 35px;
@@ -66,6 +79,14 @@ h2 {
   gap: 20px;
 }
 
+/* CONTENEDOR DE DATOS + IMAGEN */
+.datos-producto-con-imagen {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 25px;
+  align-items: start;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -75,20 +96,118 @@ h2 {
   font-size: 13px;
   margin-bottom: 5px;
   color: #444;
+  font-weight: 500;
 }
 
 .form-group input {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  transition: 0.3s;
 }
 
 .form-group input:focus {
   border-color: #00b894;
   outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 184, 148, 0.12);
 }
 
-/* IMAGE */
+/* IMAGEN DEL PRODUCTO */
+.imagen-producto-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 18px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.titulo-imagen {
+  font-size: 13px;
+  color: #444;
+  font-weight: 600;
+}
+
+.imagen-preview {
+  width: 100%;
+  height: 180px;
+  background: #f4f6f9;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.imagen-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagen-placeholder {
+  text-align: center;
+  color: #777;
+}
+
+.icono-imagen {
+  font-size: 42px;
+  margin-bottom: 5px;
+}
+
+.imagen-placeholder p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* INPUT PARA SUBIR IMAGEN */
+.input-imagen {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.input-imagen:focus {
+  border-color: #00b894;
+  outline: none;
+}
+
+/* NOMBRE DE IMAGEN */
+.nombre-imagen {
+  font-size: 13px;
+  color: #00b894;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* BOTÓN QUITAR IMAGEN */
+.btn-quitar-imagen {
+  background: #d63031;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-quitar-imagen:hover {
+  background: #b71c1c;
+}
+
+.imagen-producto-card small {
+  font-size: 12px;
+  color: #777;
+}
+
+/* CLASES ANTERIORES POR SI LAS USAS EN OTRA PARTE */
 .image-upload {
   margin-top: 20px;
   text-align: center;
@@ -136,4 +255,38 @@ h2 {
 
 .btn-primary:hover {
   opacity: 0.9;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .datos-producto-con-imagen {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .entrada-card {
+    padding: 20px;
+  }
+
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  .actions {
+    text-align: center;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
 }

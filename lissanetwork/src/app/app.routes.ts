@@ -11,15 +11,21 @@ import { NuevaSalidaComponent } from './pages/nueva-salida/nueva-salida.componen
 import { HistorialEntradasComponent } from './pages/historial-entradas/historial-entradas.component';
 import { HistorialVentasComponent } from './pages/historial-ventas/historial-ventas.component';
 import { PuntoVentaComponent } from './pages/punto-venta/punto-venta.component';
-import { ColeccionesComponent } from './pages/colecciones/colecciones.component';
+import { AtencionClienteComponent } from './pages/atencion-cliente/atencion-cliente.component'; 
 import { CategoriasComponent } from './pages/categorias/categorias.component';
+
+import { RolesComponent } from './pages/roles/roles.component';
+import { PermisosComponent } from './pages/permisos/permisos.component';
 
 export const routes: Routes = [
 
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  // Al entrar a http://localhost:4200/ irá directo al login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+  // Pantalla principal de inicio de sesión
   { path: 'login', component: LoginComponent },
 
+  // Dashboard con sus páginas internas
   {
     path: 'dashboard',
     component: DashboardComponent,
@@ -33,12 +39,19 @@ export const routes: Routes = [
       { path: 'historial-ventas', component: HistorialVentasComponent },
       { path: 'inventario', component: InventarioComponent },
       { path: 'punto-venta', component: PuntoVentaComponent },
-      { path: 'colecciones', component: ColeccionesComponent },
+      { path: 'atencion-al-cliente', component: AtencionClienteComponent },
       { path: 'proveedores', component: ProveedoresComponent },
       { path: 'categorias', component: CategoriasComponent },
-      { path: 'usuarios', component: UsuariosComponent }
+      { path: 'usuarios', component: UsuariosComponent },
+
+      // Nuevas rutas
+      { path: 'roles', component: RolesComponent },
+      { path: 'permisos', component: PermisosComponent }
 
     ]
-  }
+  },
+
+  // Cualquier ruta incorrecta vuelve al login
+  { path: '**', redirectTo: 'login' }
 
 ];

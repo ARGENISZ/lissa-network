@@ -11,12 +11,14 @@
     <!-- TABS -->
     <div class="tabs">
       <button 
+        type="button"
         [class.active]="pestanaActiva === 'producto'"
         (click)="cambiarPestana('producto')">
         Producto Único
       </button>
 
       <button 
+        type="button"
         [class.active]="pestanaActiva === 'coleccion'"
         (click)="cambiarPestana('coleccion')">
         Colección
@@ -53,33 +55,84 @@
 
       <h3>Selecciona un producto del inventario</h3>
 
-      <div class="grid-2">
+      <div class="producto-con-imagen">
 
-        <div class="form-group">
-          <label>Escanear código</label>
-          <input type="text" [(ngModel)]="salida.codigo">
+        <!-- CAMPOS DEL PRODUCTO -->
+        <div class="producto-campos">
+
+          <div class="grid-2">
+
+            <div class="form-group">
+              <label>Escanear código</label>
+              <input type="text" [(ngModel)]="salida.codigo">
+            </div>
+
+            <div class="form-group">
+              <label>Nombre del Producto</label>
+              <input type="text" [(ngModel)]="salida.nombre">
+            </div>
+
+            <div class="form-group">
+              <label>Categoría</label>
+              <input type="text" [(ngModel)]="salida.categoria">
+            </div>
+
+            <div class="form-group">
+              <label>Proveedor</label>
+              <input type="text" [(ngModel)]="salida.proveedor">
+            </div>
+
+          </div>
+
+          <div class="disponibles">
+            Disponibles: 
+            <span>{{ salida.disponibles }}</span>
+          </div>
+
         </div>
 
-        <div class="form-group">
-          <label>Nombre del Producto</label>
-          <input type="text" [(ngModel)]="salida.nombre">
+        <!-- IMAGEN DEL PRODUCTO -->
+        <div class="imagen-producto-card">
+
+          <label class="titulo-imagen">Imagen del Producto</label>
+
+          <div class="imagen-preview">
+
+            <img 
+              *ngIf="imagenPreview" 
+              [src]="imagenPreview" 
+              alt="Imagen del producto">
+
+            <div *ngIf="!imagenPreview" class="imagen-placeholder">
+              <div class="icono-imagen">📦</div>
+              <p>No hay imagen seleccionada</p>
+            </div>
+
+          </div>
+
+          <input
+            type="file"
+            class="input-imagen"
+            accept="image/jpeg, image/png, image/webp"
+            (change)="seleccionarImagen($event)">
+
+          <p *ngIf="nombreImagen" class="nombre-imagen">
+            Imagen seleccionada: {{ nombreImagen }}
+          </p>
+
+          <button
+            *ngIf="imagenPreview"
+            type="button"
+            class="btn-quitar-imagen"
+            (click)="quitarImagen()">
+            Quitar Imagen
+          </button>
+
+          <small>Formatos permitidos: JPG, PNG, WEBP</small>
+          <small>Tamaño máximo: 2MB</small>
+
         </div>
 
-        <div class="form-group">
-          <label>Categoría</label>
-          <input type="text" [(ngModel)]="salida.categoria">
-        </div>
-
-        <div class="form-group">
-          <label>Proveedor</label>
-          <input type="text" [(ngModel)]="salida.proveedor">
-        </div>
-
-      </div>
-
-      <div class="disponibles">
-        Disponibles: 
-        <span>{{ salida.disponibles }}</span>
       </div>
 
     </div>
@@ -112,8 +165,12 @@
 
     </div>
 
+    <!-- BOTÓN -->
     <div class="actions">
-      <button class="btn-primary" (click)="registrarSalida()">
+      <button 
+        type="button"
+        class="btn-primary" 
+        (click)="registrarSalida()">
         Registrar Salida
       </button>
     </div>

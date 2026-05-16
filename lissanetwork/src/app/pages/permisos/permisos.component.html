@@ -1,0 +1,203 @@
+<div class="permisos-wrapper">
+
+  <div class="permisos-card">
+
+    <div class="header">
+      <div>
+        <h2>Asignación de Permisos</h2>
+        <p>Seleccione qué acciones puede realizar el usuario dentro del sistema.</p>
+      </div>
+
+      <button 
+        type="button"
+        class="btn-back"
+        (click)="volverUsuarios()">
+        ← Volver
+      </button>
+    </div>
+
+    <div *ngIf="cargando" class="loading">
+      Cargando permisos del usuario...
+    </div>
+
+    <div *ngIf="!cargando">
+
+      <!-- DATOS DEL USUARIO -->
+      <div class="usuario-info" *ngIf="usuarioSeleccionado">
+
+        <div class="icon-user">
+          🔐
+        </div>
+
+        <div>
+          <h3>{{ usuarioSeleccionado.nombre_completo }}</h3>
+
+          <p>
+            Usuario:
+            <strong>{{ usuarioSeleccionado.usuario }}</strong>
+          </p>
+
+          <p>
+            Rol:
+            <strong>{{ usuarioSeleccionado.rol }}</strong>
+          </p>
+
+          <p *ngIf="usuarioSeleccionado.estado">
+            Estado:
+            <strong>{{ usuarioSeleccionado.estado }}</strong>
+          </p>
+        </div>
+
+      </div>
+
+      <!-- MENSAJE ADMIN -->
+      <div *ngIf="esAdministrador" class="admin-alert">
+        🛡️ Este usuario es Administrador. Tiene acceso completo a todos los módulos por defecto.
+      </div>
+
+      <!-- BOTONES RÁPIDOS -->
+      <div class="acciones-rapidas" *ngIf="!esAdministrador">
+        <button 
+          type="button"
+          class="btn-all"
+          (click)="darTodosLosPermisos()">
+          Dar todos los permisos
+        </button>
+
+        <button 
+          type="button"
+          class="btn-none"
+          (click)="quitarTodosLosPermisos()">
+          Quitar todos los permisos
+        </button>
+      </div>
+
+      <!-- TABLA DE PERMISOS -->
+      <div class="tabla-container">
+
+        <table>
+          <thead>
+            <tr>
+              <th>Módulo</th>
+              <th>Ver</th>
+              <th>Crear</th>
+              <th>Editar</th>
+              <th>Eliminar</th>
+              <th>Vista de botones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let permiso of permisos">
+
+              <td class="modulo">
+                <strong>{{ permiso.nombre }}</strong>
+              </td>
+
+              <td>
+                <select 
+                  [(ngModel)]="permiso.puede_ver"
+                  [disabled]="esAdministrador"
+                  (ngModelChange)="actualizarPermiso(permiso)">
+                  <option [ngValue]="true">Puede ver</option>
+                  <option [ngValue]="false">No puede ver</option>
+                </select>
+              </td>
+
+              <td>
+                <select 
+                  [(ngModel)]="permiso.puede_crear"
+                  [disabled]="esAdministrador"
+                  (ngModelChange)="actualizarPermiso(permiso)">
+                  <option [ngValue]="true">Puede crear</option>
+                  <option [ngValue]="false">No puede crear</option>
+                </select>
+              </td>
+
+              <td>
+                <select 
+                  [(ngModel)]="permiso.puede_editar"
+                  [disabled]="esAdministrador"
+                  (ngModelChange)="actualizarPermiso(permiso)">
+                  <option [ngValue]="true">Puede editar</option>
+                  <option [ngValue]="false">No puede editar</option>
+                </select>
+              </td>
+
+              <td>
+                <select 
+                  [(ngModel)]="permiso.puede_eliminar"
+                  [disabled]="esAdministrador"
+                  (ngModelChange)="actualizarPermiso(permiso)">
+                  <option [ngValue]="true">Puede eliminar</option>
+                  <option [ngValue]="false">No puede eliminar</option>
+                </select>
+              </td>
+
+              <td>
+                <div class="preview-buttons">
+
+                  <button 
+                    *ngIf="permiso.puede_ver"
+                    type="button"
+                    class="preview-btn ver">
+                    Ver {{ permiso.nombre }}
+                  </button>
+
+                  <button 
+                    *ngIf="permiso.puede_crear"
+                    type="button"
+                    class="preview-btn crear">
+                    Crear
+                  </button>
+
+                  <button 
+                    *ngIf="permiso.puede_editar"
+                    type="button"
+                    class="preview-btn editar">
+                    Editar
+                  </button>
+
+                  <button 
+                    *ngIf="permiso.puede_eliminar"
+                    type="button"
+                    class="preview-btn eliminar">
+                    Eliminar
+                  </button>
+
+                  <span 
+                    *ngIf="
+                      !permiso.puede_ver &&
+                      !permiso.puede_crear &&
+                      !permiso.puede_editar &&
+                      !permiso.puede_eliminar
+                    "
+                    class="sin-permisos">
+                    Sin permisos
+                  </span>
+
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+      <!-- GUARDAR -->
+      <div class="actions">
+        <button 
+          type="button"
+          class="btn-save"
+          [disabled]="guardando || esAdministrador"
+          (click)="guardarPermisos()">
+          {{ guardando ? 'Guardando...' : 'Guardar Permisos' }}
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

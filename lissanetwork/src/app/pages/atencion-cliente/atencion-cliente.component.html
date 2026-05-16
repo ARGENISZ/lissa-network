@@ -1,0 +1,80 @@
+<div class="atencion-wrapper">
+
+  <div class="header">
+    <div>
+      <h2>Atención al Cliente</h2>
+      <p>Listado de reportes enviados por los clientes</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Identidad</th>
+          <th>Contrato</th>
+          <th>Teléfono</th>
+          <th>Descripción del Problema</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let reporte of reportes; let i = index">
+
+          <td>{{ reporte.nombreCliente }}</td>
+          <td>{{ reporte.identidad }}</td>
+          <td>{{ reporte.numeroContrato }}</td>
+          <td>{{ reporte.telefono }}</td>
+
+          <td class="problema">
+            {{ reporte.descripcionProblema }}
+          </td>
+
+          <td>
+            <span
+              class="estado"
+              [ngClass]="{
+                'pendiente': reporte.estado === 'Pendiente',
+                'proceso': reporte.estado === 'En proceso',
+                'resuelto': reporte.estado === 'Resuelto'
+              }"
+            >
+              {{ reporte.estado }}
+            </span>
+          </td>
+
+          <td class="acciones">
+            <button
+              class="btn-icon edit"
+              title="Editar reporte"
+              (click)="editarReporte(i)"
+            >
+              ✏️
+            </button>
+
+            <button
+              class="btn-icon delete"
+              title="Eliminar reporte"
+              (click)="eliminarReporte(i)"
+            >
+              🗑️
+            </button>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="reportes.length === 0">
+          <td colspan="7" class="sin-datos">
+            No hay reportes registrados.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

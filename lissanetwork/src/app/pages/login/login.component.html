@@ -21,11 +21,12 @@
         <!-- USUARIO -->
         <div class="input-group">
           <span class="icon">👤</span>
-          <input type="text"
-                 placeholder="Usuario"
-                 [(ngModel)]="usuario"
-                 name="usuario"
-                 required>
+          <input 
+            type="text"
+            placeholder="Usuario"
+            [(ngModel)]="usuario"
+            name="usuario"
+            required>
         </div>
 
         <!-- CONTRASEÑA CON OJO -->
@@ -37,15 +38,16 @@
             placeholder="Contraseña"
             [(ngModel)]="password"
             name="password"
-            required
-          >
+            required>
 
           <span class="eye" (click)="togglePassword()">
             {{ mostrarPassword ? '🙈' : '👁' }}
           </span>
         </div>
 
-        <button type="submit">LOGIN</button>
+        <button type="submit" [disabled]="cargando">
+          {{ cargando ? 'VALIDANDO...' : 'LOGIN' }}
+        </button>
 
       </form>
     </div>

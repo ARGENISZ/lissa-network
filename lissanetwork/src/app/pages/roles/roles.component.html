@@ -1,0 +1,127 @@
+<div class="roles-wrapper">
+
+  <div class="roles-card">
+
+    <div class="header">
+      <div>
+        <h2>Asignación de Roles</h2>
+        <p>Seleccione el rol que tendrá el usuario dentro del sistema.</p>
+      </div>
+
+      <button 
+        type="button"
+        class="btn-back"
+        (click)="volverUsuarios()">
+        ← Volver
+      </button>
+    </div>
+
+    <div *ngIf="cargando" class="loading">
+      Cargando información del usuario...
+    </div>
+
+    <div *ngIf="!cargando">
+
+      <!-- DATOS DEL USUARIO -->
+      <div class="usuario-info">
+
+        <div class="icon-user">
+          👤
+        </div>
+
+        <div>
+          <h3>{{ nombreUsuario }}</h3>
+          <p>
+            Usuario:
+            <strong>{{ usuario }}</strong>
+          </p>
+
+          <p *ngIf="usuarioEncontrado?.correo">
+            Correo:
+            <strong>{{ usuarioEncontrado?.correo }}</strong>
+          </p>
+
+          <p *ngIf="usuarioEncontrado?.estado">
+            Estado:
+            <strong>{{ usuarioEncontrado?.estado }}</strong>
+          </p>
+        </div>
+
+      </div>
+
+      <!-- ROLES -->
+      <div class="section">
+        <h3>Roles disponibles</h3>
+
+        <div class="roles-grid">
+
+          <div 
+            class="rol-card"
+            [class.selected]="rolSeleccionado === 'Administrador'"
+            (click)="seleccionarRol('Administrador')">
+
+            <div class="rol-icon admin">
+              🛡️
+            </div>
+
+            <div>
+              <h4>Administrador</h4>
+              <p>
+                Acceso completo al sistema. Puede administrar usuarios,
+                roles, permisos, inventario, entradas, salidas y reportes.
+              </p>
+            </div>
+
+            <div class="check" *ngIf="rolSeleccionado === 'Administrador'">
+              ✓
+            </div>
+
+          </div>
+
+          <div 
+            class="rol-card"
+            [class.selected]="rolSeleccionado === 'Normal'"
+            (click)="seleccionarRol('Normal')">
+
+            <div class="rol-icon normal">
+              👥
+            </div>
+
+            <div>
+              <h4>Normal</h4>
+              <p>
+                Acceso básico al sistema. Puede usar las funciones permitidas
+                según los permisos asignados.
+              </p>
+            </div>
+
+            <div class="check" *ngIf="rolSeleccionado === 'Normal'">
+              ✓
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ROL ACTUAL -->
+      <div class="rol-actual">
+        Rol seleccionado:
+        <strong>{{ rolSeleccionado }}</strong>
+      </div>
+
+      <!-- BOTÓN GUARDAR -->
+      <div class="actions">
+        <button 
+          type="button"
+          class="btn-save"
+          (click)="guardarRol()">
+          Guardar Rol
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
