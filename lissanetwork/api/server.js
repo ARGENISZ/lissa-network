@@ -84,12 +84,7 @@ app.post('/api/entradas', upload.single('imagen'), async (req, res) => {
       costo,
       unidades,
       fecha,
-      precioVenta,
-      utilidad,
-      factura,
-      almacen,
-      lote,
-      caducidad
+      factura
     } = req.body;
 
     const imagen = req.file ? req.file.filename : null;
@@ -103,15 +98,10 @@ app.post('/api/entradas', upload.single('imagen'), async (req, res) => {
         costo,
         unidades,
         fecha,
-        precio_venta,
-        utilidad,
         factura,
-        almacen,
-        lote,
-        caducidad,
         imagen
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await pool.query(sql, [
@@ -122,12 +112,7 @@ app.post('/api/entradas', upload.single('imagen'), async (req, res) => {
       costo || 0,
       unidades || 0,
       fecha || null,
-      precioVenta || 0,
-      utilidad || 0,
       factura,
-      almacen,
-      lote,
-      caducidad || null,
       imagen
     ]);
 
@@ -178,9 +163,10 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
         categoria,
         codigo,
         proveedor,
-        precio_venta AS precioVenta,
-        almacen,
-        lote,
+        costo,
+        unidades,
+        DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha,
+        factura,
         imagen
       FROM entradas
       WHERE codigo = ?
@@ -208,6 +194,79 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
     });
   }
 });
+
+// ==============================
+// ACTUALIZAR ENTRADA EXISTENTE
+// ==============================
+app.put('/api/entradas/:id', upload.single('imagen'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      nombre,
+      categoria,
+      codigo,
+      proveedor,
+      costo,
+      unidades,
+      fecha,
+      factura
+    } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'El ID del producto es obligatorio'
+      });
+    }
+
+    const sql = `
+      UPDATE entradas
+      SET
+        nombre = ?,
+        categoria = ?,
+        codigo = ?,
+        proveedor = ?,
+        costo = ?,
+        unidades = ?,
+        fecha = ?,
+        factura = ?
+      WHERE id = ?
+    `;
+
+    const [resultado] = await pool.query(sql, [
+      nombre,
+      categoria,
+      codigo,
+      proveedor,
+      costo || 0,
+      unidades || 0,
+      fecha || null,
+      factura,
+      id
+    ]);
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({
+        ok: false,
+        mensaje: 'No se encontró el producto para actualizar'
+      });
+    }
+
+    res.json({
+      ok: true,
+      mensaje: 'Producto actualizado correctamente'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: 'Error al actualizar producto',
+      error: error.message
+    });
+  }
+});
+
 // ==============================
 // LOGIN
 // ==============================
@@ -308,59 +367,120 @@ permisos = permisosRows.map(p => ({
 // ==============================
 // SALIDAS
 // ==============================
-app.post('/api/salidas', upload.single('imagen'), async (req, res) => {
+app.post('/api/salidas', upload.none(), async (req, res) => {
+  const connection = await pool.getConnection();
+
   try {
     const {
+      idEntrada,
       fecha,
       folio,
-      cliente,
+      tecnico,
       factura,
       codigo,
       nombre,
       categoria,
       proveedor,
       disponibles,
-      precioVenta,
       unidades,
-      totalVenta
+      imagen
     } = req.body;
 
-    const imagen = req.file ? req.file.filename : null;
+    if (!idEntrada) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'El ID de la entrada es obligatorio'
+      });
+    }
 
-    const sql = `
+    if (!fecha || !folio || !tecnico || !codigo || !nombre) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'Faltan campos obligatorios'
+      });
+    }
+
+    const unidadesSalida = Number(unidades);
+
+    if (isNaN(unidadesSalida) || unidadesSalida <= 0) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'Las unidades deben ser mayores a cero'
+      });
+    }
+
+    await connection.beginTransaction();
+
+    // Buscar las unidades actuales del producto en entradas
+    const [productoRows] = await connection.query(`
+      SELECT unidades
+      FROM entradas
+      WHERE id = ?
+      FOR UPDATE
+    `, [idEntrada]);
+
+    if (productoRows.length === 0) {
+      await connection.rollback();
+
+      return res.status(404).json({
+        ok: false,
+        mensaje: 'Producto no encontrado en entradas'
+      });
+    }
+
+    const unidadesDisponibles = Number(productoRows[0].unidades);
+
+    if (unidadesSalida > unidadesDisponibles) {
+      await connection.rollback();
+
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'No hay suficientes unidades disponibles'
+      });
+    }
+
+    // Insertar salida
+    const sqlSalida = `
       INSERT INTO salidas (
+        id_entrada,
         fecha,
         folio,
-        cliente,
+        tecnico,
         factura,
         codigo,
         nombre,
         categoria,
         proveedor,
         disponibles,
-        precio_venta,
         unidades,
-        total_venta,
         imagen
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    await pool.query(sql, [
+    await connection.query(sqlSalida, [
+      idEntrada,
       fecha || null,
       folio,
-      cliente,
+      tecnico,
       factura,
       codigo,
       nombre,
       categoria,
       proveedor,
-      disponibles || 0,
-      precioVenta || 0,
-      unidades || 0,
-      totalVenta || 0,
-      imagen
+      disponibles || unidadesDisponibles,
+      unidadesSalida,
+      imagen || null
     ]);
+
+    // Descontar unidades de entradas
+    await connection.query(`
+      UPDATE entradas
+      SET unidades = unidades - ?
+      WHERE id = ?
+    `, [unidadesSalida, idEntrada]);
+
+    await connection.commit();
 
     res.json({
       ok: true,
@@ -368,30 +488,16 @@ app.post('/api/salidas', upload.single('imagen'), async (req, res) => {
     });
 
   } catch (error) {
+    await connection.rollback();
+
     res.status(500).json({
       ok: false,
       mensaje: 'Error al registrar salida',
       error: error.message
     });
-  }
-});
 
-app.get('/api/salidas', async (req, res) => {
-  try {
-    const [rows] = await pool.query(`
-      SELECT *
-      FROM salidas
-      ORDER BY id DESC
-    `);
-
-    res.json(rows);
-
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      mensaje: 'Error al obtener salidas',
-      error: error.message
-    });
+  } finally {
+    connection.release();
   }
 });
 

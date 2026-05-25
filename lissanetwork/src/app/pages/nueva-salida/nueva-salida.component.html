@@ -2,28 +2,7 @@
 
   <div class="salida-card">
 
-    <h2>
-      {{ pestanaActiva === 'producto'
-        ? 'Registro de Nueva Salida'
-        : 'Registro de Colección' }}
-    </h2>
-
-    <!-- TABS -->
-    <div class="tabs">
-      <button 
-        type="button"
-        [class.active]="pestanaActiva === 'producto'"
-        (click)="cambiarPestana('producto')">
-        Producto Único
-      </button>
-
-      <button 
-        type="button"
-        [class.active]="pestanaActiva === 'coleccion'"
-        (click)="cambiarPestana('coleccion')">
-        Colección
-      </button>
-    </div>
+    <h2>Registro de Nueva Salida</h2>
 
     <!-- INFORMACIÓN SUPERIOR -->
     <div class="top-grid">
@@ -39,13 +18,19 @@
       </div>
 
       <div class="form-group">
-        <label>Cliente</label>
-        <input type="text" [(ngModel)]="salida.cliente">
+        <label>Técnico</label>
+        <input 
+          type="text" 
+          [(ngModel)]="salida.tecnico"
+          placeholder="Nombre del técnico">
       </div>
 
       <div class="form-group">
-        <label>Factura</label>
-        <input type="text" [(ngModel)]="salida.factura">
+        <label>No. Factura</label>
+        <input 
+          type="text" 
+          [(ngModel)]="salida.factura"
+          placeholder="Factura de la entrada">
       </div>
 
     </div>
@@ -53,7 +38,7 @@
     <!-- PRODUCTO -->
     <div class="section">
 
-      <h3>Selecciona un producto del inventario</h3>
+      <h3>Buscar producto por código</h3>
 
       <div class="producto-con-imagen">
 
@@ -63,30 +48,41 @@
           <div class="grid-2">
 
             <div class="form-group">
-              <label>Escanear código</label>
-              <input type="text" [(ngModel)]="salida.codigo">
+              <label>Escanear o escribir código</label>
+              <input 
+                type="text" 
+                [(ngModel)]="salida.codigo"
+                placeholder="Escanee o escriba el código"
+                autocomplete="off"
+                autofocus
+                (input)="detectarCodigoScanner()"
+                (keyup.enter)="buscarProductoPorCodigo()">
             </div>
 
             <div class="form-group">
               <label>Nombre del Producto</label>
-              <input type="text" [(ngModel)]="salida.nombre">
+              <input 
+                type="text" 
+                [(ngModel)]="salida.nombre"
+                readonly>
             </div>
 
             <div class="form-group">
               <label>Categoría</label>
-              <input type="text" [(ngModel)]="salida.categoria">
+              <input 
+                type="text" 
+                [(ngModel)]="salida.categoria"
+                readonly>
             </div>
 
             <div class="form-group">
               <label>Proveedor</label>
-              <input type="text" [(ngModel)]="salida.proveedor">
+              <input 
+                type="text" 
+                [(ngModel)]="salida.proveedor"
+                readonly>
             </div>
 
-          </div>
-
-          <div class="disponibles">
-            Disponibles: 
-            <span>{{ salida.disponibles }}</span>
           </div>
 
         </div>
@@ -110,26 +106,13 @@
 
           </div>
 
-          <input
-            type="file"
-            class="input-imagen"
-            accept="image/jpeg, image/png, image/webp"
-            (change)="seleccionarImagen($event)">
-
           <p *ngIf="nombreImagen" class="nombre-imagen">
-            Imagen seleccionada: {{ nombreImagen }}
+            Imagen cargada: {{ nombreImagen }}
           </p>
 
-          <button
-            *ngIf="imagenPreview"
-            type="button"
-            class="btn-quitar-imagen"
-            (click)="quitarImagen()">
-            Quitar Imagen
-          </button>
-
-          <small>Formatos permitidos: JPG, PNG, WEBP</small>
-          <small>Tamaño máximo: 2MB</small>
+          <small>
+            La imagen se carga automáticamente desde la entrada del producto.
+          </small>
 
         </div>
 
@@ -145,20 +128,19 @@
       <div class="grid-3">
 
         <div class="form-group">
-          <label>Precio de Venta</label>
-          <input type="number" [(ngModel)]="salida.precioVenta">
+          <label>Unidades Disponibles</label>
+          <input 
+            type="number" 
+            [(ngModel)]="salida.disponibles"
+            readonly>
         </div>
 
         <div class="form-group">
-          <label>Número de Unidades</label>
-          <input type="number" [(ngModel)]="salida.unidades">
-        </div>
-
-        <div class="form-group total-box">
-          <label>Total de Venta</label>
-          <div class="total">
-            {{ totalVenta | currency:'USD' }}
-          </div>
+          <label>Número de Unidades a Sacar</label>
+          <input 
+            type="number" 
+            [(ngModel)]="salida.unidades"
+            placeholder="Ingrese las unidades">
         </div>
 
       </div>
@@ -171,7 +153,7 @@
         type="button"
         class="btn-primary" 
         (click)="registrarSalida()">
-        Registrar Salida
+        Registrar Salida y Descargar Pase
       </button>
     </div>
 

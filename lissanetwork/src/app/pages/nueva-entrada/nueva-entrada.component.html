@@ -125,8 +125,13 @@
               Quitar Imagen
             </button>
 
-            <small *ngIf="pestanaActiva === 'nuevo'">Formatos permitidos: JPG, PNG, WEBP</small>
-            <small *ngIf="pestanaActiva === 'nuevo'">Tamaño máximo: 2MB</small>
+            <small *ngIf="pestanaActiva === 'nuevo'">
+              Formatos permitidos: JPG, PNG, WEBP
+            </small>
+
+            <small *ngIf="pestanaActiva === 'nuevo'">
+              Tamaño máximo: 2MB
+            </small>
 
             <small *ngIf="pestanaActiva === 'existente'">
               En producto existente la imagen se carga automáticamente si el producto ya tiene una.
@@ -148,7 +153,6 @@
             <input 
               type="number" 
               [(ngModel)]="producto.costo"
-              (input)="calcularUtilidad()"
               placeholder="Ingrese el costo">
           </div>
 
@@ -168,23 +172,6 @@
           </div>
 
           <div class="form-group">
-            <label>Precio de Venta</label>
-            <input 
-              type="number" 
-              [(ngModel)]="producto.precioVenta"
-              (input)="calcularUtilidad()"
-              placeholder="Ingrese el precio de venta">
-          </div>
-
-          <div class="form-group">
-            <label>Utilidad</label>
-            <input 
-              type="number" 
-              [(ngModel)]="producto.utilidad"
-              placeholder="Utilidad">
-          </div>
-
-          <div class="form-group">
             <label>No. Factura</label>
             <input 
               type="text" 
@@ -195,38 +182,7 @@
         </div>
       </div>
 
-      <!-- INFORMACIÓN ADICIONAL -->
-      <div class="section">
-        <h3>Información Adicional</h3>
-
-        <div class="grid-3">
-
-          <div class="form-group">
-            <label>Almacén</label>
-            <input 
-              type="text" 
-              [(ngModel)]="producto.almacen"
-              placeholder="Almacén">
-          </div>
-
-          <div class="form-group">
-            <label>Número de Lote</label>
-            <input 
-              type="text" 
-              [(ngModel)]="producto.lote"
-              placeholder="Número de lote">
-          </div>
-
-          <div class="form-group">
-            <label>Fecha de Caducidad</label>
-            <input 
-              type="date" 
-              [(ngModel)]="producto.caducidad">
-          </div>
-
-        </div>
-      </div>
-
+      <!-- BOTÓN -->
       <div class="actions">
         <button 
           type="button"

@@ -3,6 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
+interface ProductoEntrada {
+  id: number | null;
+  nombre: string;
+  categoria: string;
+  codigo: string;
+  proveedor: string;
+  costo: string;
+  unidades: string;
+  fecha: string;
+  factura: string;
+  imagen: string;
+}
+
 @Component({
   selector: 'app-nueva-entrada',
   standalone: true,
@@ -22,7 +35,8 @@ export class NuevaEntradaComponent {
 
   tiempoScanner: any;
 
-  producto = {
+  producto: ProductoEntrada = {
+    id: null,
     nombre: '',
     categoria: '',
     codigo: '',
@@ -30,12 +44,7 @@ export class NuevaEntradaComponent {
     costo: '',
     unidades: '',
     fecha: '',
-    precioVenta: '',
-    utilidad: '',
     factura: '',
-    almacen: '',
-    lote: '',
-    caducidad: '',
     imagen: ''
   };
 
@@ -77,13 +86,15 @@ export class NuevaEntradaComponent {
         if (resp.ok && resp.producto) {
           const productoEncontrado = resp.producto;
 
+          this.producto.id = productoEncontrado.id || null;
           this.producto.nombre = productoEncontrado.nombre || '';
           this.producto.categoria = productoEncontrado.categoria || '';
           this.producto.codigo = productoEncontrado.codigo || codigo;
           this.producto.proveedor = productoEncontrado.proveedor || '';
-          this.producto.precioVenta = productoEncontrado.precioVenta || '';
-          this.producto.almacen = productoEncontrado.almacen || '';
-          this.producto.lote = productoEncontrado.lote || '';
+          this.producto.costo = productoEncontrado.costo || '';
+          this.producto.unidades = productoEncontrado.unidades || '';
+          this.producto.fecha = productoEncontrado.fecha || '';
+          this.producto.factura = productoEncontrado.factura || '';
           this.producto.imagen = productoEncontrado.imagen || '';
 
           if (productoEncontrado.imagen) {
@@ -99,10 +110,16 @@ export class NuevaEntradaComponent {
         console.error('Producto no encontrado:', error);
         alert('No se encontró un producto con ese código');
 
+        this.producto.id = null;
         this.producto.nombre = '';
         this.producto.categoria = '';
         this.producto.proveedor = '';
-        this.producto.precioVenta = '';
+        this.producto.costo = '';
+        this.producto.unidades = '';
+        this.producto.fecha = '';
+        this.producto.factura = '';
+        this.producto.imagen = '';
+
         this.imagenPreview = null;
         this.nombreImagen = '';
       }
@@ -154,17 +171,6 @@ export class NuevaEntradaComponent {
     this.producto.imagen = '';
   }
 
-  calcularUtilidad() {
-    const costo = Number(this.producto.costo);
-    const precioVenta = Number(this.producto.precioVenta);
-
-    if (!isNaN(costo) && !isNaN(precioVenta) && costo > 0 && precioVenta > 0) {
-      this.producto.utilidad = (precioVenta - costo).toFixed(2);
-    } else {
-      this.producto.utilidad = '';
-    }
-  }
-
   registrarEntrada() {
     if (!this.producto.codigo.trim()) {
       alert('Ingrese o escanee el código del producto');
@@ -173,6 +179,16 @@ export class NuevaEntradaComponent {
 
     if (!this.producto.nombre.trim()) {
       alert('Ingrese o busque el producto');
+      return;
+    }
+
+    if (!this.producto.costo) {
+      alert('Ingrese el costo');
+      return;
+    }
+
+    if (!this.producto.unidades) {
+      alert('Ingrese las unidades');
       return;
     }
 
@@ -185,15 +201,30 @@ export class NuevaEntradaComponent {
     formData.append('costo', this.producto.costo);
     formData.append('unidades', this.producto.unidades);
     formData.append('fecha', this.producto.fecha);
-    formData.append('precioVenta', this.producto.precioVenta);
-    formData.append('utilidad', this.producto.utilidad);
     formData.append('factura', this.producto.factura);
-    formData.append('almacen', this.producto.almacen);
-    formData.append('lote', this.producto.lote);
-    formData.append('caducidad', this.producto.caducidad);
 
     if (this.imagenProducto && this.pestanaActiva === 'nuevo') {
       formData.append('imagen', this.imagenProducto);
+    }
+
+    if (this.pestanaActiva === 'existente') {
+      if (!this.producto.id) {
+        alert('Primero debe buscar un producto existente');
+        return;
+      }
+
+      this.http.put(`${this.apiUrl}/entradas/${this.producto.id}`, formData).subscribe({
+        next: () => {
+          alert('Producto actualizado correctamente');
+          this.limpiarFormulario();
+        },
+        error: (error) => {
+          console.error('Error al actualizar producto:', error);
+          alert('Error al actualizar el producto');
+        }
+      });
+
+      return;
     }
 
     this.http.post(`${this.apiUrl}/entradas`, formData).subscribe({
@@ -210,6 +241,7 @@ export class NuevaEntradaComponent {
 
   limpiarFormulario() {
     this.producto = {
+      id: null,
       nombre: '',
       categoria: '',
       codigo: '',
@@ -217,12 +249,7 @@ export class NuevaEntradaComponent {
       costo: '',
       unidades: '',
       fecha: '',
-      precioVenta: '',
-      utilidad: '',
       factura: '',
-      almacen: '',
-      lote: '',
-      caducidad: '',
       imagen: ''
     };
 
