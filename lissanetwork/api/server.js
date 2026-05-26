@@ -75,6 +75,8 @@ app.get('/api/probar-db', async (req, res) => {
 // ENTRADAS
 // ==============================
 app.post('/api/entradas', upload.single('imagen'), async (req, res) => {
+  const connection = await pool.getConnection();
+
   try {
     const {
       nombre,
@@ -84,12 +86,31 @@ app.post('/api/entradas', upload.single('imagen'), async (req, res) => {
       costo,
       unidades,
       fecha,
-      factura
+      factura,
+      imagenActual
     } = req.body;
 
-    const imagen = req.file ? req.file.filename : null;
+    const imagen = req.file ? req.file.filename : (imagenActual || null);
+    const unidadesEntrada = Number(unidades || 0);
 
-    const sql = `
+    if (!codigo || !nombre) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'Código y nombre son obligatorios'
+      });
+    }
+
+    if (isNaN(unidadesEntrada) || unidadesEntrada <= 0) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'Las unidades deben ser mayores a cero'
+      });
+    }
+
+    await connection.beginTransaction();
+
+    // 1. Guardar historial de entrada
+    const sqlEntrada = `
       INSERT INTO entradas (
         nombre,
         categoria,
@@ -104,29 +125,70 @@ app.post('/api/entradas', upload.single('imagen'), async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    await pool.query(sql, [
+    await connection.query(sqlEntrada, [
       nombre,
       categoria,
       codigo,
       proveedor,
       costo || 0,
-      unidades || 0,
+      unidadesEntrada,
       fecha || null,
       factura,
       imagen
     ]);
 
+    // 2. Actualizar inventario acumulado
+    const sqlInventario = `
+      INSERT INTO inventario (
+        codigo,
+        nombre,
+        categoria,
+        proveedor,
+        costo,
+        factura,
+        imagen,
+        en_existencia
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        nombre = VALUES(nombre),
+        categoria = VALUES(categoria),
+        proveedor = VALUES(proveedor),
+        costo = VALUES(costo),
+        factura = VALUES(factura),
+        imagen = COALESCE(VALUES(imagen), imagen),
+        en_existencia = en_existencia + VALUES(en_existencia)
+    `;
+
+    await connection.query(sqlInventario, [
+      codigo,
+      nombre,
+      categoria,
+      proveedor,
+      costo || 0,
+      factura,
+      imagen,
+      unidadesEntrada
+    ]);
+
+    await connection.commit();
+
     res.json({
       ok: true,
-      mensaje: 'Entrada registrada correctamente'
+      mensaje: 'Entrada registrada correctamente e inventario actualizado'
     });
 
   } catch (error) {
+    await connection.rollback();
+
     res.status(500).json({
       ok: false,
       mensaje: 'Error al registrar entrada',
       error: error.message
     });
+
+  } finally {
+    connection.release();
   }
 });
 
@@ -144,6 +206,124 @@ app.get('/api/entradas', async (req, res) => {
     res.status(500).json({
       ok: false,
       mensaje: 'Error al obtener entradas',
+      error: error.message
+    });
+  }
+});
+
+
+// ==============================
+// INVENTARIO
+// ==============================
+app.get('/api/inventario', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        codigo,
+        nombre,
+        categoria,
+        proveedor,
+        en_existencia AS enExistencia,
+        status
+      FROM inventario
+      ORDER BY nombre ASC
+    `);
+
+    res.json(rows);
+
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: 'Error al obtener inventario',
+      error: error.message
+    });
+  }
+});
+
+// ==============================
+// REPORTE DE INVENTARIO
+// ==============================
+app.get('/api/inventario/reporte', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        i.codigo,
+        i.nombre,
+        i.categoria,
+        i.proveedor,
+        COALESCE(e.total_entradas, 0) AS entradas,
+        COALESCE(s.total_salidas, 0) AS salidas,
+        i.en_existencia AS enExistencia,
+        i.status
+      FROM inventario i
+      LEFT JOIN (
+        SELECT 
+          codigo,
+          SUM(COALESCE(unidades, 0)) AS total_entradas
+        FROM entradas
+        GROUP BY codigo
+      ) e ON e.codigo = i.codigo
+      LEFT JOIN (
+        SELECT 
+          codigo,
+          SUM(COALESCE(unidades, 0)) AS total_salidas
+        FROM salidas
+        GROUP BY codigo
+      ) s ON s.codigo = i.codigo
+      ORDER BY i.nombre ASC
+    `);
+
+    res.json(rows);
+
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: 'Error al generar reporte de inventario',
+      error: error.message
+    });
+  }
+});
+
+// ==============================
+// BUSCAR PRODUCTO EN INVENTARIO POR CÓDIGO
+// ==============================
+app.get('/api/inventario/codigo/:codigo', async (req, res) => {
+  try {
+    const { codigo } = req.params;
+
+    const [rows] = await pool.query(`
+      SELECT
+        id,
+        codigo,
+        nombre,
+        categoria,
+        proveedor,
+        costo,
+        factura,
+        imagen,
+        en_existencia AS unidades,
+        status
+      FROM inventario
+      WHERE codigo = ?
+      LIMIT 1
+    `, [codigo]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        ok: false,
+        mensaje: 'Producto no encontrado en inventario'
+      });
+    }
+
+    res.json({
+      ok: true,
+      producto: rows[0]
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: 'Error al buscar producto en inventario',
       error: error.message
     });
   }
@@ -190,6 +370,39 @@ app.get('/api/productos/codigo/:codigo', async (req, res) => {
     res.status(500).json({
       ok: false,
       mensaje: 'Error al buscar producto',
+      error: error.message
+    });
+  }
+});
+
+
+app.get('/api/salidas', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        id,
+        DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha,
+        folio,
+        tecnico,
+        factura,
+        codigo,
+        nombre,
+        categoria,
+        proveedor,
+        disponibles,
+        unidades,
+        imagen,
+        creado_en
+      FROM salidas
+      ORDER BY id DESC
+    `);
+
+    res.json(rows);
+
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      mensaje: 'Error al obtener historial de salidas',
       error: error.message
     });
   }
@@ -372,7 +585,6 @@ app.post('/api/salidas', upload.none(), async (req, res) => {
 
   try {
     const {
-      idEntrada,
       fecha,
       folio,
       tecnico,
@@ -381,17 +593,9 @@ app.post('/api/salidas', upload.none(), async (req, res) => {
       nombre,
       categoria,
       proveedor,
-      disponibles,
       unidades,
       imagen
     } = req.body;
-
-    if (!idEntrada) {
-      return res.status(400).json({
-        ok: false,
-        mensaje: 'El ID de la entrada es obligatorio'
-      });
-    }
 
     if (!fecha || !folio || !tecnico || !codigo || !nombre) {
       return res.status(400).json({
@@ -411,24 +615,24 @@ app.post('/api/salidas', upload.none(), async (req, res) => {
 
     await connection.beginTransaction();
 
-    // Buscar las unidades actuales del producto en entradas
+    // 1. Buscar existencia real en inventario
     const [productoRows] = await connection.query(`
-      SELECT unidades
-      FROM entradas
-      WHERE id = ?
+      SELECT en_existencia
+      FROM inventario
+      WHERE codigo = ?
       FOR UPDATE
-    `, [idEntrada]);
+    `, [codigo]);
 
     if (productoRows.length === 0) {
       await connection.rollback();
 
       return res.status(404).json({
         ok: false,
-        mensaje: 'Producto no encontrado en entradas'
+        mensaje: 'Producto no encontrado en inventario'
       });
     }
 
-    const unidadesDisponibles = Number(productoRows[0].unidades);
+    const unidadesDisponibles = Number(productoRows[0].en_existencia);
 
     if (unidadesSalida > unidadesDisponibles) {
       await connection.rollback();
@@ -439,10 +643,9 @@ app.post('/api/salidas', upload.none(), async (req, res) => {
       });
     }
 
-    // Insertar salida
+    // 2. Guardar historial de salida
     const sqlSalida = `
       INSERT INTO salidas (
-        id_entrada,
         fecha,
         folio,
         tecnico,
@@ -455,11 +658,10 @@ app.post('/api/salidas', upload.none(), async (req, res) => {
         unidades,
         imagen
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await connection.query(sqlSalida, [
-      idEntrada,
       fecha || null,
       folio,
       tecnico,
@@ -468,23 +670,23 @@ app.post('/api/salidas', upload.none(), async (req, res) => {
       nombre,
       categoria,
       proveedor,
-      disponibles || unidadesDisponibles,
+      unidadesDisponibles,
       unidadesSalida,
       imagen || null
     ]);
 
-    // Descontar unidades de entradas
+    // 3. Descontar del inventario
     await connection.query(`
-      UPDATE entradas
-      SET unidades = unidades - ?
-      WHERE id = ?
-    `, [unidadesSalida, idEntrada]);
+      UPDATE inventario
+      SET en_existencia = en_existencia - ?
+      WHERE codigo = ?
+    `, [unidadesSalida, codigo]);
 
     await connection.commit();
 
     res.json({
       ok: true,
-      mensaje: 'Salida registrada correctamente'
+      mensaje: 'Salida registrada correctamente e inventario actualizado'
     });
 
   } catch (error) {

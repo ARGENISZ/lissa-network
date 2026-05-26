@@ -91,8 +91,8 @@ export class NuevaEntradaComponent {
           this.producto.categoria = productoEncontrado.categoria || '';
           this.producto.codigo = productoEncontrado.codigo || codigo;
           this.producto.proveedor = productoEncontrado.proveedor || '';
-          this.producto.costo = productoEncontrado.costo || '';
-          this.producto.unidades = productoEncontrado.unidades || '';
+          this.producto.costo = productoEncontrado.costo ?? '';
+          this.producto.unidades = productoEncontrado.unidades ?? '';
           this.producto.fecha = productoEncontrado.fecha || '';
           this.producto.factura = productoEncontrado.factura || '';
           this.producto.imagen = productoEncontrado.imagen || '';
@@ -182,12 +182,28 @@ export class NuevaEntradaComponent {
       return;
     }
 
-    if (!this.producto.costo) {
-      alert('Ingrese el costo');
+    const costoNumero = Number(this.producto.costo);
+
+    if (
+      this.producto.costo === null ||
+      this.producto.costo === undefined ||
+      this.producto.costo === '' ||
+      isNaN(costoNumero) ||
+      costoNumero < 0
+    ) {
+      alert('Ingrese un costo válido');
       return;
     }
 
-    if (!this.producto.unidades) {
+    const unidadesNumero = Number(this.producto.unidades);
+
+    if (
+      this.producto.unidades === null ||
+      this.producto.unidades === undefined ||
+      this.producto.unidades === '' ||
+      isNaN(unidadesNumero) ||
+      unidadesNumero <= 0
+    ) {
       alert('Ingrese las unidades');
       return;
     }
@@ -198,35 +214,22 @@ export class NuevaEntradaComponent {
     formData.append('categoria', this.producto.categoria);
     formData.append('codigo', this.producto.codigo);
     formData.append('proveedor', this.producto.proveedor);
-    formData.append('costo', this.producto.costo);
-    formData.append('unidades', this.producto.unidades);
+    formData.append('costo', String(this.producto.costo));
+    formData.append('unidades', String(this.producto.unidades));
     formData.append('fecha', this.producto.fecha);
     formData.append('factura', this.producto.factura);
 
+    // Si es producto nuevo y subiste imagen, se manda el archivo.
     if (this.imagenProducto && this.pestanaActiva === 'nuevo') {
       formData.append('imagen', this.imagenProducto);
     }
 
-    if (this.pestanaActiva === 'existente') {
-      if (!this.producto.id) {
-        alert('Primero debe buscar un producto existente');
-        return;
-      }
-
-      this.http.put(`${this.apiUrl}/entradas/${this.producto.id}`, formData).subscribe({
-        next: () => {
-          alert('Producto actualizado correctamente');
-          this.limpiarFormulario();
-        },
-        error: (error) => {
-          console.error('Error al actualizar producto:', error);
-          alert('Error al actualizar el producto');
-        }
-      });
-
-      return;
+    // Si es producto existente, se manda el nombre de la imagen existente.
+    if (this.pestanaActiva === 'existente' && this.producto.imagen) {
+      formData.append('imagenActual', this.producto.imagen);
     }
 
+    // SIEMPRE CREA UN NUEVO REGISTRO
     this.http.post(`${this.apiUrl}/entradas`, formData).subscribe({
       next: () => {
         alert('Entrada registrada correctamente');

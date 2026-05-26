@@ -1,1 +1,92 @@
-<p>historial-entradas works!</p>
+<div class="historial-wrapper">
+
+  <div class="header">
+    <div>
+      <h2>Historial de Entradas</h2>
+      <p>Listado de productos registrados en el sistema</p>
+    </div>
+
+    <button 
+      type="button"
+      class="btn-refresh"
+      (click)="obtenerEntradas()">
+      🔄 Actualizar
+    </button>
+  </div>
+
+  <div class="table-card">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Proveedor</th>
+          <th>Costo</th>
+          <th>Unidades</th>
+          <th>Fecha</th>
+          <th>No. Factura</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let entrada of entradas">
+
+          <td>
+            <div class="img-box">
+              <img 
+                *ngIf="entrada.imagen" 
+                [src]="obtenerImagen(entrada.imagen)" 
+                alt="Imagen producto">
+
+              <span *ngIf="!entrada.imagen">
+                📦
+              </span>
+            </div>
+          </td>
+
+          <td>
+            <strong>{{ entrada.codigo }}</strong>
+          </td>
+
+          <td>{{ entrada.nombre }}</td>
+
+          <td>{{ entrada.categoria }}</td>
+
+          <td>{{ entrada.proveedor }}</td>
+
+          <td>
+            L. {{ entrada.costo || 0 }}
+          </td>
+
+          <td>
+            <span class="cantidad">
+              {{ entrada.unidades }}
+            </span>
+          </td>
+
+          <td>
+            {{ formatearFecha(entrada.fecha) }}
+          </td>
+
+          <td>
+            {{ entrada.factura || 'N/A' }}
+          </td>
+
+        </tr>
+
+        <tr *ngIf="entradas.length === 0">
+          <td colspan="9" class="sin-datos">
+            No hay entradas registradas.
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

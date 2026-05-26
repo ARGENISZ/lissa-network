@@ -10,6 +10,12 @@
 
     <ul class="menu">
 
+       <li 
+         routerLink="inicio" 
+         routerLinkActive="active">
+         <span>🏠</span> Inicio
+       </li>
+
       <li 
         *ngIf="puedeVer('nueva_entrada')"
         routerLink="nueva-entrada" 
@@ -35,7 +41,7 @@
         *ngIf="puedeVer('historial_ventas')"
         routerLink="historial-ventas" 
         routerLinkActive="active">
-        <span>💰</span> Historial de Ventas y Salidas
+        <span>💰</span> Historial de Salidas
       </li>
 
       <li 
@@ -43,13 +49,6 @@
         routerLink="inventario" 
         routerLinkActive="active">
         <span>📦</span> Inventario
-      </li>
-
-      <li 
-        *ngIf="puedeVer('punto_venta')"
-        routerLink="punto-venta" 
-        routerLinkActive="active">
-        <span>🛒</span> Punto de Venta
       </li>
 
       <li 

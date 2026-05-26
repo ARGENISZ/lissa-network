@@ -1,1 +1,136 @@
-<p>inventario works!</p>
+<div class="inventario-wrapper">
+
+  <div class="header">
+    <div>
+      <h2>Inventario</h2>
+      <p>Existencia actual de productos según entradas y salidas</p>
+    </div>
+
+    <button 
+      type="button"
+      class="btn-refresh"
+      (click)="obtenerInventario(); obtenerReporteInventario()">
+      🔄 Actualizar
+    </button>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-card">
+
+    <div class="form-group">
+      <label>Buscar por código</label>
+      <input 
+        type="text"
+        [(ngModel)]="buscarCodigo"
+        placeholder="Ingrese o escanee el código">
+    </div>
+
+    <div class="form-group">
+      <label>Filtrar por proveedor</label>
+      <select [(ngModel)]="filtroProveedor">
+        <option value="">Todos los proveedores</option>
+        <option *ngFor="let proveedor of proveedores" [value]="proveedor">
+          {{ proveedor }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Filtrar por categoría</label>
+      <select [(ngModel)]="filtroCategoria">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let categoria of categorias" [value]="categoria">
+          {{ categoria }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group acciones-filtros">
+      <button 
+        type="button"
+        class="btn-clear"
+        (click)="limpiarFiltros()">
+        Limpiar filtros
+      </button>
+    </div>
+
+  </div>
+
+  <div class="table-card">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>En existencia</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let producto of inventarioFiltrado">
+
+          <td>
+            <strong>{{ producto.codigo }}</strong>
+          </td>
+
+          <td>{{ producto.nombre }}</td>
+
+          <td>{{ producto.categoria }}</td>
+
+          <td>
+            <strong>{{ producto.enExistencia }}</strong>
+          </td>
+
+          <td>
+            <span 
+              class="status"
+              [ngClass]="getClaseStatus(producto.status)">
+              {{ producto.status }}
+            </span>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="inventarioFiltrado.length === 0">
+          <td colspan="5" class="sin-datos">
+            No hay productos con los filtros seleccionados.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- BOTONES DE REPORTE -->
+  <div class="report-card">
+
+    <div>
+      <h3>Reporte de Inventario</h3>
+      <p>
+        Genera un reporte con código, nombre, categoría, proveedor, entradas,
+        salidas, existencia actual y estado.
+      </p>
+    </div>
+
+    <div class="report-buttons">
+      <button 
+        type="button"
+        class="btn-pdf"
+        (click)="generarPDF()">
+        📄 Descargar PDF
+      </button>
+
+      <button 
+        type="button"
+        class="btn-excel"
+        (click)="generarExcel()">
+        📊 Descargar Excel
+      </button>
+    </div>
+
+  </div>
+
+</div>

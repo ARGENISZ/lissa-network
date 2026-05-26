@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
+import { InicioComponent } from './pages/inicio/inicio.component';
 import { ProveedoresComponent } from './pages/proveedores/proveedores.component';
 import { InventarioComponent } from './pages/inventario/inventario.component';
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
@@ -19,19 +20,19 @@ import { PermisosComponent } from './pages/permisos/permisos.component';
 
 export const routes: Routes = [
 
-  // Al entrar a http://localhost:4200/ irá directo al login
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // Pantalla principal de inicio de sesión
   { path: 'login', component: LoginComponent },
 
-  // Dashboard con sus páginas internas
   {
     path: 'dashboard',
     component: DashboardComponent,
     children: [
 
-      { path: '', redirectTo: 'inventario', pathMatch: 'full' },
+      // Al entrar al dashboard irá directo a Inicio
+      { path: '', redirectTo: 'inicio', pathMatch: 'full' },
+
+      { path: 'inicio', component: InicioComponent },
 
       { path: 'nueva-entrada', component: NuevaEntradaComponent },
       { path: 'nueva-salida', component: NuevaSalidaComponent },
@@ -44,14 +45,12 @@ export const routes: Routes = [
       { path: 'categorias', component: CategoriasComponent },
       { path: 'usuarios', component: UsuariosComponent },
 
-      // Nuevas rutas
       { path: 'roles', component: RolesComponent },
       { path: 'permisos', component: PermisosComponent }
 
     ]
   },
 
-  // Cualquier ruta incorrecta vuelve al login
   { path: '**', redirectTo: 'login' }
 
 ];

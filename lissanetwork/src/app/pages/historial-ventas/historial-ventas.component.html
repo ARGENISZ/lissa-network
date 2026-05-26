@@ -1,1 +1,98 @@
-<p>historial-ventas works!</p>
+<div class="historial-wrapper">
+
+  <div class="header">
+    <div>
+      <h2>Historial de Ventas y Salidas</h2>
+      <p>Listado de productos entregados o retirados del inventario</p>
+    </div>
+
+    <button 
+      type="button"
+      class="btn-refresh"
+      (click)="obtenerSalidas()">
+      🔄 Actualizar
+    </button>
+  </div>
+
+  <div class="table-card">
+
+    <table>
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Fecha</th>
+          <th>Folio</th>
+          <th>Técnico</th>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Categoría</th>
+          <th>Proveedor</th>
+          <th>No. Factura</th>
+          <th>Disponibles antes</th>
+          <th>Unidades entregadas</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let salida of salidas">
+
+          <td>
+            <div class="img-box">
+              <img 
+                *ngIf="salida.imagen" 
+                [src]="obtenerImagen(salida.imagen)" 
+                alt="Imagen producto">
+
+              <span *ngIf="!salida.imagen">
+                📦
+              </span>
+            </div>
+          </td>
+
+          <td>{{ formatearFecha(salida.fecha) }}</td>
+
+          <td>
+            <strong>{{ salida.folio }}</strong>
+          </td>
+
+          <td>{{ salida.tecnico }}</td>
+
+          <td>
+            <strong>{{ salida.codigo }}</strong>
+          </td>
+
+          <td>{{ salida.nombre }}</td>
+
+          <td>{{ salida.categoria }}</td>
+
+          <td>{{ salida.proveedor }}</td>
+
+          <td>{{ salida.factura || 'N/A' }}</td>
+
+          <td>
+            <span class="disponibles">
+              {{ salida.disponibles }}
+            </span>
+          </td>
+
+          <td>
+            <span class="cantidad">
+              {{ salida.unidades }}
+            </span>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="salidas.length === 0">
+          <td colspan="11" class="sin-datos">
+            No hay salidas registradas.
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

@@ -70,7 +70,7 @@ export class NuevaSalidaComponent {
       return;
     }
 
-    this.http.get<any>(`${this.apiUrl}/productos/codigo/${codigo}`).subscribe({
+    this.http.get<any>(`${this.apiUrl}/inventario/codigo/${codigo}`).subscribe({
       next: (resp) => {
         if (resp.ok && resp.producto) {
           const productoEncontrado = resp.producto;

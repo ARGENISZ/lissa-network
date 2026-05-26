@@ -1,0 +1,74 @@
+<div class="inicio-wrapper">
+
+  <div class="welcome-card">
+
+    <div class="welcome-content">
+
+      <div class="welcome-text">
+        <span class="badge">Sistema de Inventario</span>
+
+        <h1>
+          Bienvenido,
+          <span>{{ usuarioLogueado?.nombre_completo || 'Usuario' }}</span>
+        </h1>
+
+        <p>
+          Has ingresado correctamente al sistema de inventario de 
+          <strong>LISSA NETWORK</strong>.
+        </p>
+
+        <div class="user-details">
+          <div>
+            <label>Usuario</label>
+            <strong>{{ usuarioLogueado?.usuario }}</strong>
+          </div>
+
+          <div>
+            <label>Rol</label>
+            <strong>{{ rolUsuario }}</strong>
+          </div>
+
+          <div>
+            <label>Fecha</label>
+            <strong>{{ fechaActual }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-icon">
+        📦
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="dashboard-cards">
+
+    <div class="info-card">
+      <div class="icon">➕</div>
+      <h3>Nueva Entrada</h3>
+      <p>Registra productos nuevos o actualiza productos existentes.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="icon">➖</div>
+      <h3>Nueva Salida</h3>
+      <p>Controla las salidas de productos y genera pases descargables.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="icon">📊</div>
+      <h3>Historial</h3>
+      <p>Consulta entradas, salidas y movimientos del inventario.</p>
+    </div>
+
+    <div class="info-card">
+      <div class="icon">📦</div>
+      <h3>Inventario</h3>
+      <p>Visualiza la existencia actual de tus productos registrados.</p>
+    </div>
+
+  </div>
+
+</div>
